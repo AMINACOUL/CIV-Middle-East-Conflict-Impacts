@@ -171,10 +171,10 @@ body{background:var(--bg0);color:var(--text);font-family:var(--font);font-size:1
 <div id="riskMatrix">
   <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-right:16px;flex-shrink:0">Matrice de Risque</div>
   <div class="risk-pill risk-red" id="riskEnergie" onclick="switchTab('energie')" title="Énergie">
-    <span class="risk-dot">●</span><span class="risk-label">Énergie</span><span class="risk-val" id="rvEnergie">109$/bbl</span>
+    <span class="risk-dot">●</span><span class="risk-label">Énergie</span><span class="risk-val" id="rvEnergie">$95/bbl</span>
   </div>
   <div class="risk-pill risk-red" id="riskFiscal" onclick="switchTab('fiscal')" title="Fiscalité">
-    <span class="risk-dot">●</span><span class="risk-label">Fiscal</span><span class="risk-val" id="rvFiscal">Gel prix</span>
+    <span class="risk-dot">●</span><span class="risk-label">Fiscal</span><span class="risk-val" id="rvFiscal">Scén. A</span>
   </div>
   <div class="risk-pill risk-red" id="riskCacao" onclick="switchTab('agriculture')" title="Cacao">
     <span class="risk-dot">●</span><span class="risk-label">Cacao</span><span class="risk-val" id="rvCacao">~$4 200/t</span>
@@ -206,6 +206,270 @@ body{background:var(--bg0);color:var(--text);font-family:var(--font);font-size:1
   <div class="tab" onclick="switchTab('sources')">Sources &amp; Méthode</div>
 </div>
 
+<!-- ═══ PANEL : DÉCIDEUR ═══ -->
+<div class="panel" id="panel-decideur">
+
+  <!-- HEADLINE SCORE -->
+  <div style="background:linear-gradient(135deg,#0e1d2c,#0f2a1a);border:1px solid rgba(249,115,22,.3);border-radius:10px;padding:18px 24px;margin-bottom:14px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3)">Score de vulnérabilité composite — CIV</div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin-top:4px">
+        <span id="scoreComposite" style="font-size:48px;font-weight:900;font-family:var(--mono);color:#f97316">67</span>
+        <span style="font-size:13px;color:var(--text3)">/100</span>
+        <span id="ceasefireBadge" style="background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3);padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700">🕊️ CESSEZ-LE-FEU 2 SEMAINES</span>
+        <span id="scoreBadge" style="background:rgba(245,158,11,.15);color:#f59e0b;border:1px solid rgba(245,158,11,.3);padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700">🟡 VIGILANCE ÉLEVÉE</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Calculé à partir de 6 piliers · mis à jour automatiquement · <span id="scoreDate"></span></div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:6px">Révision WEO FMI</div>
+      <div style="font-size:22px;font-weight:700;color:#ef4444;font-family:var(--mono)" id="weoCountdown">—</div>
+      <div style="font-size:10px;color:var(--text3)">14 avr. 2026 · 1ʳᵉ révision post-choc</div>
+    </div>
+  </div>
+
+  <!-- WHAT-IF BRENT SLIDER -->
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">⚡ Simulateur "Et si…" — Prix du Brent</div>
+        <div style="font-size:11px;color:var(--text3)">Faites glisser pour simuler l'impact fiscal et social en temps réel</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:700;color:#f97316;font-family:var(--mono)" id="sliderBrentVal">$109</div>
+        <div style="font-size:10px;color:var(--text3)">/bbl · Brent</div>
+      </div>
+    </div>
+    <input type="range" id="brentSlider" min="60" max="150" value="95" step="1"
+      style="width:100%;accent-color:#f97316;height:6px;cursor:pointer"
+      oninput="updateSimulator(this.value)">
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px">
+      <span>$60 — Résolution Hormuz</span>
+      <span>$75 — Scén. A</span>
+      <span style="color:#f59e0b">$109 — Actuel</span>
+      <span style="color:#ef4444">$130+ — Extrême</span>
+      <span>$150</span>
+    </div>
+    <!-- Simulator output tiles -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px">
+      <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--border)">
+        <div style="font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Super pompe<br>prix équitable</div>
+        <div id="simSuper" style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--text)">875</div>
+        <div style="font-size:9px;color:var(--text3)">FCFA/L</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--border)">
+        <div style="font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Subvention<br>implicite</div>
+        <div id="simSubv" style="font-size:18px;font-weight:700;font-family:var(--mono);color:#f59e0b">+55</div>
+        <div style="font-size:9px;color:var(--text3)">FCFA/L</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--border)">
+        <div style="font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Coût fiscal<br>mensuel</div>
+        <div id="simCout" style="font-size:18px;font-weight:700;font-family:var(--mono);color:#f59e0b">~50</div>
+        <div style="font-size:9px;color:var(--text3)">Mds FCFA/mois</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--border)">
+        <div style="font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">% PIB<br>annualisé</div>
+        <div id="simPIB" style="font-size:18px;font-weight:700;font-family:var(--mono);color:#f59e0b">0.7</div>
+        <div style="font-size:9px;color:var(--text3)">% PIB/an</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--border)">
+        <div style="font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Scénario<br>fiscal</div>
+        <div id="simScen" style="font-size:14px;font-weight:700;color:#f59e0b">B — Statu quo</div>
+        <div id="simAlert" style="font-size:9px;color:var(--text3)">Gel tenable</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION PRIORITY CARDS -->
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px">🎯 Actions prioritaires pour les décideurs</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+
+    <div class="action-card" data-priority="URGENT" style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.3);border-left:4px solid #ef4444;border-radius:8px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.06em">🚨 URGENT — 0–30 jours</span>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Chiffrer le coût réel du gel des prix</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7">
+        ① Obtenir volumes consommation réelle DGH/PETROCI/SIR<br>
+        ② Calculer subvention implicite exacte (PMC vs prix marché)<br>
+        ③ Évaluer impact sur recettes fiscales budgétisées (711 Mds FCFA)<br>
+        ④ Préparer note MFB avant révision WEO FMI (14 avr.)
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#ef4444">→ Responsable : DGH + Direction Budget MFB</div>
+    </div>
+
+    <div class="action-card" data-priority="URGENT" style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.3);border-left:4px solid #ef4444;border-radius:8px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.06em">🚨 URGENT — 0–30 jours</span>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Plan d'urgence filière cacao</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7">
+        ① Évaluer stocks bloqués Abidjan + San Pedro + coopératives<br>
+        ② Mesures d'urgence : facilités de crédit coopératives (BCEAO)<br>
+        ③ Réduire coût intrants engrais pour maintenir rendements H2<br>
+        ④ Mécanisme de soutien planteurs (transferts ciblés)
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#ef4444">→ Responsable : Conseil Café-Cacao + Min. Agriculture</div>
+    </div>
+
+    <div class="action-card" data-priority="COURT_TERME" style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-left:4px solid #f59e0b;border-radius:8px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="background:#f59e0b;color:#000;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.06em">⚠ COURT TERME — 1–3 mois</span>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Contingence : révision progressive des prix carburant</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7">
+        ① Préparer scénario de sortie du gel si Brent > $120 durablement<br>
+        ② Cibler la protection sur ménages pauvres (lampant, 6 kg butane)<br>
+        ③ Communication sociale anticipée (transporteurs, entreprises)<br>
+        ④ Synchroniser avec programme FMI — éviter biais déficit >4%
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#f59e0b">→ Responsable : MFB + Min. Pétrole + BCEAO</div>
+    </div>
+
+    <div class="action-card" data-priority="COURT_TERME" style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-left:4px solid #f59e0b;border-radius:8px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="background:#f59e0b;color:#000;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.06em">⚠ COURT TERME — 1–3 mois</span>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Sécuriser les approvisionnements alternatifs</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7">
+        ① Identifier sources non-Golfe pour brut SIR (Nigeria, Angola, Méditerranée)<br>
+        ② Négocier stocks stratégiques + buffer PETROCI (+2 mois)<br>
+        ③ Contrats engrais alternatifs (hors Golfe) pour saison petite traite<br>
+        ④ Rejoindre cadre IEA/BAD de coordination régionale approvisionnement
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#f59e0b">→ Responsable : Min. Pétrole + PETROCI + Min. Agriculture</div>
+    </div>
+
+    <div class="action-card" data-priority="MOYEN_TERME" style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-left:4px solid #3b82f6;border-radius:8px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="background:#3b82f6;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.06em">📋 MOYEN TERME — 3–12 mois</span>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Transformer la crise en levier de réforme</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7">
+        ① Accélérer transformation locale cacao (objectif 50% d'ici 2030)<br>
+        ② Réforme mécanisme PMC → ciblage ménages vulnérables<br>
+        ③ Diversification énergétique : solaire, hydro, gaz offshore CIV<br>
+        ④ Utiliser le hub Abidjan–San Pedro comme levier CEDEAO (AfCFTA)
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#3b82f6">→ Responsable : Présidence + MFB + Min. Pétrole + CCC</div>
+    </div>
+
+    <div class="action-card" data-priority="MOYEN_TERME" style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-left:4px solid #3b82f6;border-radius:8px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="background:#3b82f6;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.06em">📋 MOYEN TERME — 3–12 mois</span>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Gestion du risque FMI — ratio dette/recettes</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7">
+        ① Service dette/recettes = 17.7% → seuil 18% : marge de 0.3pp seulement<br>
+        ② Identifier 100–150 Mds FCFA recettes additionnelles (fiscalité + formalisation)<br>
+        ③ Utiliser programme FMI $4.8Mds comme garantie marchés souverains<br>
+        ④ Préparer communication WEO 14 avr. 2026 avant publication
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#3b82f6">→ Responsable : MFB + BCEAO + Ambassade FMI Abidjan</div>
+    </div>
+  </div>
+
+  <!-- KEY DATES + WATCHLIST -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:10px">📅 Échéances critiques</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(239,68,68,.08);border-radius:6px;border-left:3px solid #ef4444">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#ef4444">Ultimatum Trump Iran (Hormuz)</div>
+            <div style="font-size:10px;color:var(--text3)">Résolution ou escalade → impact direct prix</div>
+          </div>
+          <div id="cdApril6" style="font-size:13px;font-weight:700;font-family:var(--mono);color:#ef4444;white-space:nowrap">6 avr.</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(249,115,22,.07);border-radius:6px;border-left:3px solid #f97316">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#f97316">Révision WEO FMI — CIV incluse</div>
+            <div style="font-size:10px;color:var(--text3)">1ʳᵉ révision officielle post-choc → notation CIV</div>
+          </div>
+          <div id="cdApril14" style="font-size:13px;font-weight:700;font-family:var(--mono);color:#f97316;white-space:nowrap">14 avr.</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(245,158,11,.07);border-radius:6px;border-left:3px solid #f59e0b">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#f59e0b">Fiscal Monitor FMI</div>
+            <div style="font-size:10px;color:var(--text3)">Trajectoire dette Afrique → impact programme FMI CIV</div>
+          </div>
+          <div style="font-size:13px;font-weight:700;font-family:var(--mono);color:#f59e0b;white-space:nowrap">15 avr.</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(59,130,246,.07);border-radius:6px;border-left:3px solid #3b82f6">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#3b82f6">Prochain ajustement DGH carburants</div>
+            <div style="font-size:10px;color:var(--text3)">Décision maintien ou révision prix pompe — mai 2026</div>
+          </div>
+          <div style="font-size:13px;font-weight:700;font-family:var(--mono);color:#3b82f6;white-space:nowrap">1 mai</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(16,185,129,.07);border-radius:6px;border-left:3px solid #10b981">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#10b981">Saison petite traite cacao</div>
+            <div style="font-size:10px;color:var(--text3)">Application engrais critique → rendements H2 2026</div>
+          </div>
+          <div style="font-size:13px;font-weight:700;font-family:var(--mono);color:#10b981;white-space:nowrap">Mai–Juin</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:10px">🔭 Indicateurs à surveiller (watchlist)</div>
+      <table style="width:100%;font-size:11px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid var(--border)">
+          <th style="text-align:left;padding:5px 4px;color:var(--text3);font-size:9px;text-transform:uppercase">Indicateur</th>
+          <th style="text-align:center;padding:5px 4px;color:var(--text3);font-size:9px;text-transform:uppercase">Valeur</th>
+          <th style="text-align:center;padding:5px 4px;color:var(--text3);font-size:9px;text-transform:uppercase">Tendance</th>
+          <th style="text-align:center;padding:5px 4px;color:var(--text3);font-size:9px;text-transform:uppercase">Seuil alert.</th>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:6px 4px;color:var(--text2)">Brent ($/bbl)</td>
+          <td style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#ef4444" id="wl-brent" style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#2ec4b6">$95</td>
+          <td style="padding:6px 4px;text-align:center;color:#ef4444">↑ +58%</td>
+          <td style="padding:6px 4px;text-align:center;color:var(--text3)">$120</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:6px 4px;color:var(--text2)">Service dette/recettes</td>
+          <td style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#ef4444">17.7%</td>
+          <td style="padding:6px 4px;text-align:center;color:#ef4444">↑ proche seuil</td>
+          <td style="padding:6px 4px;text-align:center;color:#ef4444;font-weight:600">18% ⚠</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:6px 4px;color:var(--text2)">Prix cacao mondial</td>
+          <td style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#ef4444">$4 200/t</td>
+          <td style="padding:6px 4px;text-align:center;color:#ef4444">↓ –65%</td>
+          <td style="padding:6px 4px;text-align:center;color:var(--text3)">$5 000</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:6px 4px;color:var(--text2)">Urée ($/MT)</td>
+          <td style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#ef4444">$700</td>
+          <td style="padding:6px 4px;text-align:center;color:#ef4444">↑ +46% MoM</td>
+          <td style="padding:6px 4px;text-align:center;color:var(--text3)">$500</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:6px 4px;color:var(--text2)">FAO Food Price Index</td>
+          <td style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#f59e0b">128.5</td>
+          <td style="padding:6px 4px;text-align:center;color:#f59e0b">↑ +2.4%</td>
+          <td style="padding:6px 4px;text-align:center;color:var(--text3)">132</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:6px 4px;color:var(--text2)">IHPC CIV (ANStat)</td>
+          <td style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#10b981" id="wl-ihpc">+1.9%</td>
+          <td style="padding:6px 4px;text-align:center;color:#10b981">↑ (haussier)</td>
+          <td style="padding:6px 4px;text-align:center;color:#f59e0b">3% UEMOA</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 4px;color:var(--text2)">Déficit courant (% PIB)</td>
+          <td style="padding:6px 4px;text-align:center;font-family:var(--mono);color:#f59e0b">–2.3%</td>
+          <td style="padding:6px 4px;text-align:center;color:#f59e0b">↓ se creuse</td>
+          <td style="padding:6px 4px;text-align:center;color:var(--text3)">–4%</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
 <!-- ═══ PANEL : VUE D'ENSEMBLE ═══ -->
 <div class="panel active" id="panel-apercu">
 
@@ -222,26 +486,16 @@ body{background:var(--bg0);color:var(--text);font-family:var(--font);font-size:1
       <!-- MESURES GOUVERNEMENTALES -->
       <div class="sitrep-section full" style="background:rgba(16,185,129,.03)">
         <div class="sitrep-section-title"><span class="icon">🇨🇮</span>Mesures gouvernementales ivoiriennes</div>
-        <div class="sitrep-text" id="sitrepGouv" contenteditable="true">
-          <strong>Prix des carburants maintenus inchangés pour avril 2026</strong> (communiqué officiel DGH/Min. Mines &amp; Pétrole, 31 mars 2026) :
-          Super sans plomb <strong>820 FCFA/L</strong> · Gasoil <strong>675 FCFA/L</strong> · Pétrole lampant 705 FCFA/L.
-          Gaz butane : 6 kg = 2 000 FCFA · 12,5 kg = 5 200 FCFA · 15 kg = 6 965 FCFA.
-          Mécanisme d'ajustement automatique mensuel suspendu dans les faits pour protéger le pouvoir d'achat.
-          <strong style="color:#f59e0b">Coût fiscal croissant</strong> : chaque mois de gel représente un manque à gagner fiscal estimé à 30–80 Mds FCFA selon le niveau du Brent.
-          La <strong>raffinerie SIR</strong> (Abidjan) traite le brut importé — fortement exposée à la hausse des coûts d'approvisionnement.
-        </div>
+        <div class="sitrep-text" id="sitrepGouv" contenteditable="true" spellcheck="false" class="sitrep-section-text" style="font-size:12px;color:var(--text);line-height:1.65;outline:none;cursor:text;border-left:2px solid rgba(16,185,129,.5);padding-left:10px" title="Cliquer pour éditer">
+        <strong>Prix des carburants maintenus inchangés pour avril 2026</strong> (DGH/Min. Mines &amp; Pétrole, 31 mars 2026) : Super sans plomb <strong>820 FCFA/L</strong> · Gasoil <strong>675 FCFA/L</strong> · Pétrole lampant 705 FCFA/L. Gaz butane : 6 kg = 2 000 FCFA · 12,5 kg = 5 200 FCFA.<br><br><strong style="color:#10b981">🕊️ Impact cessez-le-feu (7 avr.) :</strong> Avec le Brent retombé à ~$95/bbl, le gel des prix à la pompe est maintenant <strong>moins coûteux</strong> et possiblement <strong>profitable</strong> pour le Trésor (marge ~75 FCFA/L vs prix équitable). Les décisions DGH de mai 2026 devront intégrer cette nouvelle réalité. <strong>Mais la restauration complète des flux Hormuz prendra des mois</strong> — EIA prévoit pas de retour aux niveaux pré-crise avant fin 2026.
+      </div>
       </div>
       <!-- PÉTROLE -->
       <div class="sitrep-section">
         <div class="sitrep-section-title"><span class="icon">⚡</span>Pétrole &amp; Géopolitique</div>
-        <div class="sitrep-text" id="sitrepPetrole" contenteditable="true">
-          Brent <strong>$109.03/bbl</strong> · WTI <strong>$111.54</strong> — inversion historique (WTI &gt; Brent pour la 1ère fois depuis 2020).
-          Brent +55% en mars 2026 — record depuis 1988.
-          <strong style="color:#ef4444">Deadline April 6 (Trump) :</strong> ultimatum pour réouverture Hormuz ou frappe sur puits de pétrole, Kharg Island.
-          Afrique de l'Ouest : –43% des exportations pétrolières du Golfe vers l'Afrique (4 semaines, Kpler).
-          IEA : 12 mbd perdus — pire crise énergétique mondiale depuis les chocs de 1973/1979.
-          <strong style="color:#14b8a6">Signal positif :</strong> CMA CGM 1er navire occidental à transiter Hormuz (5 avr).
-        </div>
+        <div class="sitrep-text" id="sitrepPetrole" contenteditable="true" spellcheck="false" class="sitrep-section-text" style="font-size:12px;color:var(--text);line-height:1.65;outline:none;cursor:text;border-left:2px solid rgba(16,185,129,.6);padding-left:10px;background:rgba(16,185,129,.03)" title="Cliquer pour éditer">
+        <strong style="color:#10b981">✅ CESSEZ-LE-FEU 2 SEMAINES — 7 AVR. 2026</strong><br>Trump a suspendu les frappes contre l'Iran pour 2 semaines. L'Iran ouvre Hormuz "sous coordination" de ses forces armées. Deal négocié par le Pakistan.<br><br>Brent <strong style="color:#10b981">~$95/bbl</strong> (–13%) · WTI ~$96/bbl (–14%) — plus grande chute depuis la Guerre du Golfe 1991. Avant l'annonce : WTI $114, Brent plus élevé.<br><br><strong style="color:#f59e0b">⚠ Prudence :</strong> EIA avertit : production OPEC+ ne reviendra pas aux niveaux pré-crise avant fin 2026. "Nous n'avons jamais vu le détroit rouvrir. La restauration complète prendra des mois." — Tristan Abbey, EIA. Iran facture $2M/navire. Cessez-le-feu fragile · négociations à Islamabad 10 avr.
+      </div>
       </div>
       <!-- CACAO + ENGRAIS -->
       <div class="sitrep-section">
@@ -258,23 +512,9 @@ body{background:var(--bg0);color:var(--text);font-family:var(--font);font-size:1
       <!-- ALERTE FISCALE -->
       <div class="sitrep-section full" style="background:rgba(249,115,22,.04);border-left:3px solid var(--orange)">
         <div class="sitrep-section-title"><span class="icon">💰</span>Alerte Fiscale CIV</div>
-        <div class="sitrep-text" id="sitrepFiscal" contenteditable="true">
-          <strong style="color:#ef4444">🔴 Alerte FMI — Ecofin Agency (30 mars 2026) :</strong>
-          CIV identifiée parmi <strong>12 pays en développement</strong> confrontés simultanément à la hausse des spreads souverains
-          et au service de la dette supérieur à la médiane 2026 <em>(blog FMI 30 mars · Abebe Aemro Selassie, Dir. Afrique FMI)</em>.
-          Prévisions BAD 6.5% basées sur Brent <strong>$68–69/bbl</strong> (WEO oct. 2025) — +58% au-dessus du niveau actuel.
-          Déficit courant projeté –2.3% PIB (BAD base) : s'élargit avec hausse facture pétrolière.
-          Dette publique : <strong>~57.3% PIB</strong> · Service dette/recettes : <strong>17.7%</strong>
-          (seuil critique FMI : 18%) · "La marge pour absorber les chocs est limitée" (Stratégie dette MFB 2025–2029).
-          <strong style="color:#f97316">WEO FMI 14 avr. 2026</strong> = 1er réexamen multilatéral officiel post-choc.
-          <br><br>
-          La CI absorbe le choc via le <strong>gel des prix à la pompe</strong> (mécanisme PMC suspendu).
-          Coût estimé du gel : <strong>~50 Mds FCFA/mois</strong> (Brent $109).
-          Recettes fiscales pétrole budgétisées : ~1.2% PIB = 711 Mds FCFA.
-          Double pression fiscale : (1) subvention implicite carburant + (2) chute recettes cacao (–57% bord champ).
-          Eurobond $1.75 Mds à 6.45% (mars 2025) · Programme FMI $4.8 Mds (2023–2026) — filets de sécurité préservés.
-          <strong>Jusqu'à quand le gel est-il tenable ?</strong> Si Brent > $120 durablement : révision prix à la pompe probable.
-        </div>
+        <div class="sitrep-text" id="sitrepFiscal" contenteditable="true" spellcheck="false" class="sitrep-section-text" style="font-size:12px;color:var(--text);line-height:1.65;outline:none;cursor:text;border-left:2px solid rgba(16,185,129,.5);padding-left:10px;background:rgba(16,185,129,.04);padding:8px 10px;border-radius:0 4px 4px 0" title="Cliquer pour éditer">
+        Brent ~$95/bbl — <strong style="color:#10b981">situation largement améliorée</strong>. Avec le Brent sous $100, le prix équitable estimé du super est ~$745 FCFA/L vs plafond officiel 820 FCFA/L → <strong style="color:#10b981">pas de subvention implicite</strong> (Scénario A). Le gel des prix est maintenant <strong>moins coûteux</strong> : l'État récupère même une marge positive (~75 FCFA/L) vs prix plafond.<br><br><strong style="color:#f59e0b">⚠ Mais prudence :</strong> EIA dit que la production ne reviendra pas aux niveaux pré-crise avant fin 2026. Les prix pourraient remonter si le cessez-le-feu échoue (négociations fragiles). Le ratio service dette/recettes (17.7% → seuil 18%) reste sous tension. Révision WEO FMI le 14 avr. intégrera le double choc pétrole + cacao.
+      </div>
       </div>
     </div>
     <div class="sitrep-footer">
@@ -351,8 +591,8 @@ body{background:var(--bg0);color:var(--text);font-family:var(--font);font-size:1
       </div>
       <div class="kpi-card amber">
         <div class="kpi-label">Subvention implicite est.</div>
-        <div class="kpi-value" id="kpiSubvention" style="font-size:17px;color:#f59e0b">~50<span class="kpi-unit"> Mds/mois</span></div>
-        <div class="kpi-badge warn">Estimation WB EEAM · Brent $109</div>
+        <div class="kpi-value" id="kpiSubvention" style="font-size:17px;color:#10b981">~0–15<span class="kpi-unit"> Mds/mois</span></div>
+        <div class="kpi-badge warn">Brent $95 post-cessez-le-feu · Scénario A</div>
       </div>
     </div>
   </div>
@@ -394,11 +634,146 @@ body{background:var(--bg0);color:var(--text);font-family:var(--font);font-size:1
     </div>
   </div>
 
+
+  <!-- ANStat OFFICIAL DATA SECTION -->
+  <div style="margin:14px 0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);border-radius:5px;padding:4px 12px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#f97316">
+          🏛️ Données officielles — ANStat Côte d'Ivoire
+        </div>
+        <span id="anstatLiveBadge" style="background:rgba(100,100,100,.15);color:var(--text3);border:1px solid var(--border);padding:3px 8px;border-radius:3px;font-size:10px;font-weight:700">● SEED</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <a href="https://anstat.ci" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none">↗ anstat.ci</a>
+        <button onclick="fetchAnstatData()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:4px;font-size:10px;cursor:pointer">↻ Actualiser</button>
+      </div>
+    </div>
+
+    <!-- ANStat tiles grid -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+
+      <!-- IHPC Inflation -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #10b981;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">IHPC — Inflation glissement annuel</div>
+        <div style="font-size:26px;font-weight:700;font-family:var(--mono);color:#10b981" id="anstatIhpc">+1.9%</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">Fév. 2026 · ANStat CIV</div>
+        <div style="font-size:10px;color:#10b981;margin-top:3px">✅ Sous seuil UEMOA 3%</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          ⚠ Choc Hormuz : risque dépassement 3–5% H2 2026
+        </div>
+      </div>
+
+      <!-- Inflation moy. annuelle -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #10b981;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Inflation moy. annuelle (UEMOA)</div>
+        <div style="font-size:26px;font-weight:700;font-family:var(--mono);color:#10b981" id="anstatInflMoy">+0.2%</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">Fév. 2026 · ANStat CIV</div>
+        <div style="font-size:10px;color:#10b981;margin-top:3px">Très faible — pré-choc</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          MoM Fév. 2026 : +0.3%
+        </div>
+      </div>
+
+      <!-- Croissance PIB -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #10b981;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Croissance PIB réel</div>
+        <div style="font-size:26px;font-weight:700;font-family:var(--mono);color:#10b981" id="anstatPib">+6.0%</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">2024 · ANStat / Trésor FR</div>
+        <div style="font-size:10px;color:#10b981;margin-top:3px">+2pp au-dessus ASS moy.</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          2025p : 6.5% · 2023 : 6.5%
+        </div>
+      </div>
+
+      <!-- Production industrielle -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #3b82f6;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Production industrielle (IPI)</div>
+        <div style="font-size:26px;font-weight:700;font-family:var(--mono);color:#3b82f6" id="anstatIpi">+7.3%</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">Nov. 2025 · ANStat CIV</div>
+        <div style="font-size:10px;color:#3b82f6;margin-top:3px">Glissement annuel</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          Oct. 2025 : +5.4% · Secteur secondaire dynamique
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+
+      <!-- Population -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #8b5cf6;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Population (2026)</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:#8b5cf6">33.5M</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">Worldometer / ONU · ANStat 2025</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:3px">Densité : 100.8 hbts/km²</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          52.5% urbain · 47.5% rural · Âge médian 18.5 ans
+        </div>
+      </div>
+
+      <!-- Recettes fiscales -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #f59e0b;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Recettes fiscales / PIB</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:#f59e0b">14.4%</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">2024 · Trésor FR / MFB</div>
+        <div style="font-size:10px;color:#ef4444;margin-top:3px">Cible FMI 2026 : 15.9%</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          Seuil UEMOA : 20% · Écart : –5.6pp
+        </div>
+      </div>
+
+      <!-- Déficit budgétaire -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #f59e0b;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Déficit budgétaire</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:#f59e0b">–4.0%</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">2024 · PIB · Trésor FR</div>
+        <div style="font-size:10px;color:#f59e0b;margin-top:3px">Cible 2026 : 3.6%</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          2023 : –5.2% · Consolidation en cours
+        </div>
+      </div>
+
+      <!-- EHCVM + RGPH -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid #6b7280;border-radius:8px;padding:14px 16px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Enquêtes ANStat en cours</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text2)">EHCVM<br>2025–2026</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">Pauvreté & inégalités · Résultats déc. 2026</div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px">
+          RGPH 2021 · MICS 2026 · EMI 2025
+          <a href="https://rp2021.anstat.ci" target="_blank" style="color:var(--blue);margin-left:4px">↗ rp2021.anstat.ci</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANSTAT INFLATION PRE vs POST SHOCK INSIGHT -->
+    <div style="margin-top:10px;background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-left:3px solid #f97316;border-radius:0 8px 8px 0;padding:12px 16px;font-size:12px;color:var(--text2);line-height:1.7">
+      <strong style="color:#f97316">💡 Analyse clé ANStat — Inflation avant et après le choc Hormuz :</strong>
+      Avant le choc (fév. 2026), l'inflation ivoirienne était à <strong style="color:#10b981">+0.2% en moyenne annuelle</strong> —
+      l'une des plus basses de l'UEMOA, sous le seuil de convergence communautaire de 3%.
+      Le choc Hormuz (Brent +55% depuis fév.) menace ce bilan : les prix de l'énergie et du transport
+      pourraient pousser l'IHPC vers <strong style="color:#ef4444">3–5% en H2 2026</strong>,
+      au-dessus du seuil UEMOA, avec des implications pour la politique monétaire de la <strong>BCEAO</strong>
+      et le programme FMI. <em>Prochain IHPC ANStat attendu : mars 2026 (env. 4 avr. 2026)</em>.
+    </div>
+  </div>
   <!-- TIMELINE -->
   <div style="margin-top:16px">
     <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">📋 Chronologie des événements clés</div>
     <div class="info-box">
       <table class="timeline-table">
+        <tr style="background:rgba(16,185,129,.1);border-left:3px solid #10b981">
+          <td class="tl-date" style="color:#10b981;font-weight:700">7–8 Avr 2026</td>
+          <td class="tl-actor" style="color:#10b981;font-weight:700">🕊️ Cessez-le-feu</td>
+          <td class="tl-event">
+            <span class="badge" style="background:rgba(16,185,129,.2);color:#10b981">✅ RUPTURE MAJEURE</span>
+            <strong>Cessez-le-feu 2 semaines USA–Iran</strong> (7 avr. 2026, 20h ET) : Trump suspend les frappes si l'Iran rouvre Hormuz. L'Iran accepte le passage "sous coordination" de ses forces armées. Deal négocié par le Pakistan (PM Shehbaz Sharif). Négociations à Islamabad le 10 avr.
+            <strong style="color:#10b981">Impact marché immédiat :</strong>
+            Brent –13% à ~$95/bbl · WTI –14% à ~$96/bbl — plus grande chute journalière depuis la Guerre du Golfe 1991.
+            S&amp;P 500 +0.1% · Dow –0.2%.
+            <strong style="color:#f59e0b">Prudence :</strong> EIA : restauration complète des flux = plusieurs mois. Production OPEC+ ne reviendra pas aux niveaux pré-crise avant fin 2026. Iran facture $2M/navire pour le transit.
+            <small>Bloomberg · NBC News · Axios · CBC · Al Jazeera · 7–8 avr. 2026.</small>
+          </td>
+        </tr>
         <tr style="background:rgba(239,68,68,.08)">
           <td class="tl-date" style="color:#ef4444;font-weight:700">5 Avr 2026</td>
           <td class="tl-actor">Marchés</td>
@@ -1015,8 +1390,21 @@ body{background:var(--bg0);color:var(--text);font-family:var(--font);font-size:1
 
 <script>
 // ── DATA SEED (avril 2026) ──────────────────────────────────────
+// ANStat CIV seed data — sources officielles
+const ANSTAT_SEED = {
+  ihpc_glissement: 1.9,    // Fév. 2026 · ANStat
+  ihpc_moy_annuelle: 0.2,  // Fév. 2026 · ANStat
+  ihpc_mom: 0.3,           // Fév. 2026 · ANStat
+  pib_croissance: 6.0,     // 2024 · Trésor FR
+  ipi_croissance: 7.3,     // Nov. 2025 · ANStat
+  recettes_pib: 14.4,      // 2024 · MFB
+  deficit_pib: 4.0,        // 2024 · MFB
+  population: 33.5,        // 2026 · Worldometer/ONU
+  seuil_uemoa: 3.0,        // Critère convergence UEMOA
+};
+
 const SEED = {
-  brent: 109.03, wti: 111.54, transits: 5,
+  brent: 95.20, wti: 96.10, transits: 5,
   fao: 128.5, riz: 346, uree: 700,
   super_fcfa: 820, gasoil_fcfa: 675, lampant_fcfa: 705,
   gaz6: 2000, gaz12: 5200,
@@ -1075,10 +1463,10 @@ function renderEcowasCharts() {
 }
 
 function switchTab(id) {
-  const tabMap = {apercu:0, energie:1, agriculture:2, fiscal:3, social:4, ecowas:5, sources:6};
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i === (tabMap[id]??0)));
+  const tabMap = {decideur:0, apercu:1, energie:2, agriculture:3, fiscal:4, social:5, ecowas:6, sources:7};
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i === (tabMap[id]??1)));
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
-  setTimeout(renderCharts, 50); if(id==='ecowas') setTimeout(renderEcowasCharts, 100);
+  setTimeout(renderCharts, 50); if(id==='ecowas') setTimeout(renderEcowasCharts, 100); if(id==='decideur') updateSimulator(document.getElementById('brentSlider')?.value || SEED.brent);
 }
 
 // ── DATE & DAY COUNTER ───────────────────────────────────────────
@@ -1132,7 +1520,7 @@ function renderCharts() {
     new Chart(document.getElementById('chartBrent'), {
       type: 'line',
       data: {
-        labels: ['Jan 26','Fév 26','28 Fév','5 Mar','12 Mar','19 Mar','26 Mar','31 Mar','5 Avr'],
+        labels: ['Jan 26','Fév 26','28 Fév','5 Mar','12 Mar','19 Mar','26 Mar','5 Avr','8 Avr (CEASEFIRE)'],
         datasets: [{
           label: 'Brent ($/bbl)',
           data: [73, 78, 68, 90, 112, 108, 105, 107.96, 109.03],
@@ -1345,6 +1733,174 @@ async function refreshData() {
 
 // Init
 setTimeout(renderCharts, 200);
+// ── SIMULATOR — what-if Brent slider ──────────────────────────────
+function updateSimulator(brent) {
+  brent = parseFloat(brent);
+  document.getElementById('sliderBrentVal').textContent = '$' + brent;
+
+  // MOPS-based landed cost estimate: 0.077 + 0.0102*Brent + 0.10 freight
+  const mops = 0.077 + 0.0102 * brent;
+  const landed = mops + 0.10; // $/L landed at Abidjan
+  const landedFcfa = Math.round(landed * 655.957); // USD to FCFA
+  const ceiling = 820; // super sans plomb official ceiling
+
+  const subvUnitFcfa = Math.max(0, landedFcfa - ceiling);
+  // Monthly cost: ~1.6 billion L/year → ~133M L/month
+  const monthlyCostBn = Math.round(subvUnitFcfa * 133 / 1000); // Mds FCFA
+  const pibPct = ((monthlyCostBn * 12) / 70000 * 100).toFixed(1); // ~70Mds USD GDP
+
+  let scenario, color, alert;
+  if (brent < 85) { scenario='A — Résolution'; color='var(--green)'; alert='Prix marché < plafond'; }
+  else if (brent < 115) { scenario='B — Statu quo'; color='#f59e0b'; alert='Gel tenable à court terme'; }
+  else if (brent < 128) { scenario='C — Dégradation'; color='#f97316'; alert='⚠ Révision probable'; }
+  else { scenario='D — Critique'; color='#ef4444'; alert='🔴 Gel insoutenable'; }
+
+  const set = (id, val, col) => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = val; if (col) el.style.color = col; }
+  };
+  set('simSuper', landedFcfa, color);
+  set('simSubv', subvUnitFcfa > 0 ? '+' + subvUnitFcfa : '0', color);
+  set('simCout', subvUnitFcfa > 0 ? '~' + monthlyCostBn : '0', color);
+  set('simPIB', subvUnitFcfa > 0 ? pibPct : '0.0', color);
+  set('simScen', scenario, color);
+  set('simAlert', alert, null);
+
+  // Update composite score
+  updateCompositeScore(brent);
+
+  // Alert banner
+  const banner = document.getElementById('alertBanner');
+  const bannerText = document.getElementById('alertBannerText');
+  if (brent >= 128 && banner && bannerText) {
+    bannerText.textContent = '🔴 SIMULATION : Brent $' + brent + '/bbl → Gel des prix INSOUTENABLE · Subvention implicite ~' + monthlyCostBn + ' Mds FCFA/mois (' + pibPct + '% PIB/an)';
+    banner.style.display = 'block';
+  } else if (banner && brent < 128) {
+    banner.style.display = 'none';
+  }
+}
+
+// ── COMPOSITE SCORE ───────────────────────────────────────────────
+function updateCompositeScore(brent) {
+  brent = brent || SEED.brent;
+  // 6 pillars, each 0-20 points (lower = worse)
+  const energie    = brent < 85 ? 18 : brent < 110 ? 12 : brent < 130 ? 6 : 2;
+  const fiscal     = brent < 90 ? 18 : brent < 110 ? 12 : brent < 120 ? 7 : 3;
+  const cacao      = 4; // already in crisis
+  const logistique = 10; // amber
+  const alimentaire = 11; // fao 128.5 — amber
+  const social      = 9; // 37.5% poverty
+
+  const total = energie + fiscal + cacao + logistique + alimentaire + social;
+  // Scale: 0=worst, 100=best → invert: score = total/120*100
+  const score = Math.round(total / 120 * 100);
+  const inverse = 100 - score; // vulnerability score (higher = worse)
+
+  const el = document.getElementById('scoreComposite');
+  const badge = document.getElementById('scoreBadge');
+  if (el) el.textContent = inverse;
+  if (badge) {
+    if (inverse >= 70) { badge.textContent = '🔴 ALERTE CRITIQUE'; badge.style.background = 'rgba(239,68,68,.15)'; badge.style.color = '#ef4444'; badge.style.borderColor = 'rgba(239,68,68,.3)'; }
+    else if (inverse >= 45) { badge.textContent = '🟡 VIGILANCE ÉLEVÉE'; badge.style.background = 'rgba(245,158,11,.15)'; badge.style.color = '#f59e0b'; badge.style.borderColor = 'rgba(245,158,11,.3)'; }
+    else { badge.textContent = '🟢 SITUATION STABLE'; badge.style.background = 'rgba(16,185,129,.15)'; badge.style.color = '#10b981'; badge.style.borderColor = 'rgba(16,185,129,.3)'; }
+  }
+  const scoreDate = document.getElementById('scoreDate');
+  if (scoreDate) scoreDate.textContent = new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+}
+
+// ── COUNTDOWN ─────────────────────────────────────────────────────
+(function() {
+  // WEO April 14 countdown
+  const weoDate = new Date('2026-04-14T00:00:00Z');
+  const now = new Date();
+  const diff = Math.ceil((weoDate - now) / 86400000);
+  const weoEl = document.getElementById('weoCountdown');
+  if (weoEl) {
+    if (diff > 0) weoEl.textContent = 'J–' + diff;
+    else if (diff === 0) weoEl.textContent = "AUJOURD'HUI";
+    else weoEl.textContent = 'PUBLIÉ';
+  }
+
+  // April 6 deadline
+  const d6 = new Date('2026-04-06T20:00:00');
+  const d6diff = Math.ceil((d6 - now) / 3600000);
+  const d6el = document.getElementById('cdApril6');
+  if (d6el) {
+    if (d6diff > 24) d6el.textContent = Math.ceil(d6diff/24) + 'j';
+    else if (d6diff > 0) d6el.textContent = d6diff + 'h';
+    else d6el.textContent = 'PASSÉ';
+  }
+})();
+
+// Init simulator and score
+updateSimulator(95);
+
+// ── ANStat CIV — API fetch attempt ───────────────────────────────
+// ANStat publishes monthly IHPC — try to fetch latest from their public API
+// Endpoints observed: anstat.ci/indicateur-details/...
+// Also try allorigins CORS proxy as fallback
+async function fetchAnstatData() {
+  const badge = document.getElementById("anstatLiveBadge");
+  if (badge) { badge.textContent = "↻ Chargement..."; badge.style.color = "#f59e0b"; }
+
+  try {
+    // Try ANStat JSON endpoint for IHPC (inflation indicator)
+    const url = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://anstat.ci/api/v1/indicators/ihpc/latest");
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (r.ok) {
+      const j = await r.json();
+      if (j.contents) {
+        const data = JSON.parse(j.contents);
+        if (data.value) {
+          updateAnstatKPIs({ ihpc: data.value, period: data.period });
+          if (badge) { badge.textContent = "● LIVE"; badge.style.color = "#10b981"; }
+          return;
+        }
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: scrape ANStat homepage for latest IHPC headline
+  try {
+    const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://anstat.ci/");
+    const r = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) {
+      const j = await r.json();
+      const text = j.contents || "";
+      // Parse IHPC value from page — ANStat shows e.g. "hausse de 1,9%"
+      const m = text.match(/(?:hausse|baisse|progression)\s+de\s+[+\-]?\s*([0-9,]+)\s*%/i);
+      if (m) {
+        const val = parseFloat(m[1].replace(",","."));
+        updateAnstatKPIs({ ihpc: val });
+        if (badge) { badge.textContent = "● LIVE scrape"; badge.style.color = "#2ec4b6"; }
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // All sources failed — keep seed data
+  if (badge) { badge.textContent = "● SEED · anstat.ci"; badge.style.color = "var(--text3)"; }
+  console.log("[ANStat] Using seed data — API not reachable from browser (CORS)");
+}
+
+function updateAnstatKPIs(data) {
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  if (data.ihpc !== undefined) {
+    const sign = data.ihpc >= 0 ? "+" : "";
+    set("anstatIhpc", sign + data.ihpc.toFixed(1) + "%");
+    const color = Math.abs(data.ihpc) < 3 ? "#10b981" : "#ef4444";
+    const el = document.getElementById("anstatIhpc");
+    if (el) el.style.color = color;
+  }
+  if (data.period) {
+    const el = document.getElementById("anstatIhpc");
+    if (el) el.nextElementSibling.textContent = data.period + " · ANStat CIV";
+  }
+}
+
+// Auto-attempt on load (silent fail)
+setTimeout(fetchAnstatData, 3000);
+
 </script>
 </body>
 </html>
